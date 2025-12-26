@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.connection import get_db_connection
 
 def create_incident(title, description=None, severity=None, log_id=None, reporter=None):
@@ -51,6 +54,42 @@ def get_incident_by_id(incident_id):
         cursor.close()
         conn.close() 
 
+def search_incidents(status=None, severity=None, title_keyword=None, start_date=None, end_date=None):
+    conn = get_db_connection()
+    if not conn: return []
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = "SELECT * FROM incidents WHERE 1=1"
+        params = []
+        
+        if status:
+            query += " AND status = %s"
+            params.append(status)
+        if severity:
+            query += " AND severity = %s"
+            params.append(severity)
+        if title_keyword:
+            query += " AND (title LIKE %s OR description LIKE %s)"
+            params.append(f"%{title_keyword}%")
+            params.append(f"%{title_keyword}%")
+        if start_date:
+            query += " AND created_at >= %s"
+            params.append(start_date)
+        if end_date:
+            query += " AND created_at <= %s"
+            params.append(end_date)
+        
+        query += " ORDER BY created_at DESC"
+        
+        cursor.execute(query, tuple(params))
+        incidents = cursor.fetchall()
+        return incidents 
+    except Exception as e:
+        print(f"Error searching incidents: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
 def update_incident_status(incident_id, new_status):
     conn = get_db_connection()

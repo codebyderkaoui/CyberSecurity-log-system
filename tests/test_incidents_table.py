@@ -1,4 +1,6 @@
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.connection import get_db_connection
 
 def test_connection():
