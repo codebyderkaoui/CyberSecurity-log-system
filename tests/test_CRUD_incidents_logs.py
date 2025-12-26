@@ -1,6 +1,9 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.connection import get_db_connection
-from models.incident_model import create_incident, get_all_incidents, get_incident_by_id, update_incident_status, update_incident_severity, delete_incident
-from models.log_model import insert_log, get_all_logs, get_log_by_id, update_log, delete_log
+from models.incident_model import create_incident, get_all_incidents, get_incident_by_id, search_incidents, update_incident_status, update_incident_severity, delete_incident
+from models.log_model import insert_log, get_all_logs, get_log_by_id, search_logs, update_log, delete_log
 
 def run_manual_tests():
     print("\nRunning manual tests...")
@@ -28,6 +31,15 @@ def run_manual_tests():
     else:
         print(" Error getting incident by id.")
         return False
+    
+    print("getting incident by filter...")
+    incidents = search_incidents(title_keyword="test")
+    if incidents:
+        print(" Success getting incident by filter.")
+    else:
+        print(" Error getting incident by filter.")
+        return False
+
     
     print("Updating status...")
     update_incident_status(new_incident_id, "resolved")
@@ -78,6 +90,14 @@ def run_manual_tests():
         print(" Success getting log by id.")
     else:
         print(" Error getting log by id.")
+        return False
+    
+    print("Getting log by filter...")
+    logs = search_logs("1.2.3.4", None, "login", None, None, None)
+    if logs:
+        print(" Success getting log by filter.")
+    else:
+        print(" Error getting log by filter.")
         return False
     
     print("Updating log...")
