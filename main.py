@@ -7,8 +7,12 @@ sys.path.append(os.path.dirname(__file__))
 
 from db.connection import get_db_connection
 from models.log_model import insert_log, get_all_logs, get_log_by_id, update_log, delete_log, search_logs
-from models.incident_model import create_incident, get_all_incidents, get_incident_by_id, update_incident_status, update_incident_severity, delete_incident, search_incidents
+from models.incident_model import (
+    create_incident, get_all_incidents, get_incident_by_id, 
+    update_incident_status, update_incident_severity, delete_incident, search_incidents
+)
 from analysis.reports import generate_weekly_report
+from analysis.anomaly_detection import run_all_detections
 
 
 def clear_screen():
@@ -33,7 +37,7 @@ def print_menu():
     print("  5. Search/Filter Incidents")
     print("  6. Update Incident Status")
     print("  7. Generate Weekly Report")
-    print("  8. Run Anomaly Detection (Coming Soon)")
+    print("  8. Run Anomaly Detection")
     print("  0. Exit")
     print("-"*60)
 
@@ -344,12 +348,13 @@ def generate_report():
 
 
 def run_anomaly_detection():
-    """Placeholder for anomaly detection"""
-    print("\n" + "="*60)
-    print("ANOMALY DETECTION")
-    print("="*60)
-    print("\n⚠️  This feature is under development (Week 6)")
-    print("Coming soon: Detection of repeated failed logins and suspicious patterns")
+    """Run anomaly detection algorithms"""
+    print("\n")
+    try:
+        result = run_all_detections(auto_create_incidents=True)
+    except Exception as e:
+        print(f"❌ Error running anomaly detection: {e}")
+    
     input("\nPress Enter to continue...")
 
 
