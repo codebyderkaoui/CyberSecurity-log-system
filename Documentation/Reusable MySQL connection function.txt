@@ -1,0 +1,37 @@
+--------------------------------------------------------------------------------
+--  install MySQL connector:
+--------------------------------------------------------------------------------
+
+python -m pip install mysql-connector-python
+
+--------------------------------------------------------------------------------
+--  config script:
+--------------------------------------------------------------------------------
+
+from db.config import host, user, password, database
+import mysql.connector
+from mysql.connector import Error
+
+def get_db_connection():          --  Returns a connection object to the MySQL database.
+                                  --  This function is reused by Flask routes, analytics scripts,
+                                  --  and any module that needs DB access.
+    try:
+        connection = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database
+        )
+        if connection.is_connected():
+            return connection
+        
+    except Error as e:
+        print(f"Error connecting to database: {e}")
+        return None
+
+--------------------------------------------------------------------------------
+--  in every other connection:
+--------------------------------------------------------------------------------
+
+from db.connection import get_db_connection
+

@@ -1,0 +1,204 @@
+-- Cybersecurity Log & Incident Management System
+-- Database Schema
+-- Author: [Derkaoui Mohammed]
+-- Date: [11/10/2025]
+-- Database: cybersec_logs
+
+CREATE DATABASE IF NOT EXISTS cybersec_logs
+  CHARACTER SET = utf8mb4                         
+  COLLATE = utf8mb4_unicode_ci;                  -- for latin, symbols and emojis support
+USE cybersec_logs;                       
+
+--------------------------------------------------------------------------------
+--  TABLE 1 : users
+-- Purpose: store credentials and roles for system access
+--------------------------------------------------------------------------------
+
+create table users (
+  user_id int auto_increment primary key,                -- unique user ID
+  username varchar(50) unique not null,                  -- login name
+  password_hash varchar(255) not null,                   -- hashed password
+  role ENUM('admin','analyst') default 'analyst',        -- user role
+  created_at datetime default current_timestamp,         -- account creation time
+  updated_at datetime default current_timestamp on update current_timestamp
+  );
+
+-- Rationale:
+-- * 'username' must be unique for login.
+-- * Role is simple but allows admin vs analyst functions.
+-- * Timestamps help track user account creation & updates.
+
+
+--------------------------------------------------------------------------------
+-- TABLE 2 : logs
+-- Purpose: record all activity logs (login attempts, suspicious events, etc.)
+--------------------------------------------------------------------------------
+
+create table logs (
+  log_id int auto_increment primary key,               -- unique log entry
+  event_time datetime not null,                         -- when event occurred
+  username varchar(50) default null,                   -- user involved (optional)
+  ip_address varchar(50) default null,                  -- supports IPv4 + IPv6
+  event_type varchar(45) not null,                     -- e.g. 'login_failed'
+  severity enum('low','medium','high') default 'low',  -- quick risk level
+  message text,                                        -- full log content
+  created_at datetime default current_timestamp,       -- when inserted
+  foreign key (username) references users(username)
+      on delete set null on update cascade
+  );
+
+-- Rationale:
+-- * Each log represents a discrete security event.
+-- * event_time allow chronological and range-based queries.
+-- * 'event_type' makes filtering possible for analytics.
+-- * Severity helps classify the log impact.
+-- * Foreign key links logs to users (when applicable).
+
+
+--------------------------------------------------------------------------------
+-- TABLE 3 : incidents
+-- Purpose: record security incidents, often linked to one or more logs
+--------------------------------------------------------------------------------
+
+create table incidents (
+  incident_id int auto_increment primary key,                        -- unique incident
+  log_id int default null,                                           -- reference to related log
+  title varchar(200) not null,                                       -- short incident summary
+  description text,                                                  -- detailed context
+  status enum('open','investigating','resolved') default 'open',     -- workflow stage
+  severity enum('low','medium','high','critical') default 'medium',
+  reporter varchar(50) default 'system',                             -- who created the incident
+  created_at datetime default current_timestamp,
+  updated_at datetime default current_timestamp on update current_timestamp,
+  foreign key (log_id) references logs(log_id)
+      on delete set null on update cascade
+  );
+
+-- Rationale:
+-- * Represents an actionable security case linked to logs.
+-- * Can be created manually or automatically (via trigger).
+-- * Tracks lifecycle and responsible entity.
+-- * 'severity' + 'status' used for dashboard stats.
+
+
+--------------------------------------------------------------------------------
+-- INDEXES (performance)
+--------------------------------------------------------------------------------
+
+create index idx_logs_time on logs(event_time);
+create index idx_logs_ip on logs(ip_address);
+create index idx_incidents_status on incidents(status);
+create index idx_incidents_severity on incidents(severity);
+
+-- Rationale:
+-- * Indexes accelerate dashboard queries and daily summaries.
+-- * Common filters are time-based and status-based.
+
+--------------------------------------------------------------------------------
+-- SAMPLE TRIGGER (optional)
+-- Purpose: auto-create incident on repeated failed logins
+--------------------------------------------------------------------------------
+
+delimiter //
+create trigger trg_auto_incident
+after insert on logs
+for each row
+begin
+    declare fail_count int;
+
+    if new.event_type = 'login_failed' then
+        select count(*) into fail_count
+        from logs
+        where ip_address = new.ip_address
+            and event_type = 'login_failed'
+            and event_time > now() - interval 10 minute;
+    
+        if fail_count >= 3 then
+            insert into incidents (log_id, title, description, severity, reporter)
+            values (new.log_id, 'Multiple login failures detected', concat('IP:', new.ip_address, ' had ', fail_count, ' failed attempts'), 'high', 'system');
+		end if;
+	end if;
+end;
+//
+delimiter ;
+
+-- Rationale:
+-- * Automatically detects brute-force attempts.
+-- * Demonstrates trigger logic for real security use case.
+
+-- explaination:
+-- * select count(*) into fail_count : counts how many failed logins came from the same IP in the last 10 minutes.
+-- * if fail_count >= 3 then : If 3 or more → it triggers an incident automatically.
+
+--------------------------------------------------------------------------------
+-- STORED PROCEDURE (optional)
+-- Purpose: generate daily report summary of logs and incidents
+--------------------------------------------------------------------------------
+
+delimiter //
+create procedure daily_summary()
+begin
+    select
+        date(event_time) as date,
+        count(*) as total_logs,
+        sum(event_type = 'login_failed') as failed_logins,
+        (select count(*)
+        from incidents i
+        where date(i.created_at) = date(l.event_time)) as total_incidents
+    from logs l
+    group by date(l.event_time)
+    order by date desc
+    limit 7;
+end;
+//
+delimiter ;
+
+-- Rationale:
+-- * Illustrates use of stored procedures for reporting.
+-- * Can be visualized easily with Pandas or Plotly.
+
+-- explaination:
+-- * date(event_time) as date, : Converts the timestamp column in logs to a date only, ignoring the time.
+-- * (event_type = 'login_failed') : evaluates to 1 if true, 0 if false.
+-- * sum(...) : counts how many failed logins occurred that day.
+
+-- Why Use a Procedure:
+
+-- * Centralizes logic: no need to write this query over and over.
+-- * Can be called from apps (Python) without rewriting SQL.
+-- * Easy to maintain: change the query once, all calls reflect the update.
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS weekly_summary;
+CREATE PROCEDURE weekly_summary()
+BEGIN
+    SELECT
+        DATE(l.event_time) AS date,
+        COUNT(*) AS total_logs,
+        SUM(l.event_type = 'login_failed') AS failed_logins,
+        COUNT(DISTINCT i.log_id) AS total_incidents
+    FROM logs l
+    LEFT JOIN incidents i ON DATE(i.created_at) = DATE(l.event_time)
+    GROUP BY DATE(l.event_time)
+    ORDER BY date DESC
+    LIMIT 7;
+END;
+//
+DELIMITER ;
+
+-- update it to weekly and fixed it since it didn't work during the python test.
+--------------------------------------------------------------------------------
+-- VIEW (optional)
+-- Purpose: simplified view for active incidents (for dashboard)
+--------------------------------------------------------------------------------
+
+create or replace view active_incidents as
+select
+    incident_id, title, severity, status, created_at
+    from incidents
+    where status != 'resolved';
+
+-- Rationale:
+-- * Makes dashboard queries cleaner.
+-- * Demonstrates MySQL VIEW usage.
+-- * Simplifies queries. every time, you just do: select * from active_incidents;

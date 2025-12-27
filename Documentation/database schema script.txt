@@ -1,0 +1,110 @@
+create database if not exists cybersec_logs
+    character set = utf8mb4
+    collate = utf8mb4_unicode_ci;
+use cybersec_logs;
+
+create table users (
+  user_id int auto_increment primary key,
+  username varchar(50) unique not null,
+  password_hash varchar(255) not null,
+  role ENUM('admin','analyst') default 'analyst',
+  created_at datetime default current_timestamp,
+  updated_at datetime default current_timestamp on update current_timestamp
+  );
+
+create table logs (
+  log_id int auto_increment primary key,
+  event_time datetime not null,
+  username varchar(50) default null,
+  ip_address varchar(50) default null,
+  event_type varchar(45) not null,
+  severity enum('low','medium','high') default 'low',
+  message text,
+  created_at datetime default current_timestamp,
+  foreign key (username) references users(username)
+      on delete set null on update cascade
+  );
+
+create table incidents (
+  incident_id int auto_increment primary key,
+  log_id int default null,
+  title varchar(200) not null,
+  description text,
+  status enum('open','investigating','resolved') default 'open',
+  severity enum('low','medium','high','critical') default 'medium',
+  reporter varchar(50) default 'system',
+  created_at datetime default current_timestamp,
+  updated_at datetime default current_timestamp on update current_timestamp,
+  foreign key (log_id) references logs(log_id)
+      on delete set null on update cascade
+  );
+  
+create index idx_logs_time on logs(event_time);
+create index idx_logs_ip on logs(ip_address);
+create index idx_incidents_status on incidents(status);
+create index idx_incidents_severity on incidents(severity);
+
+delimiter //
+create trigger trg_auto_incident
+after insert on logs
+for each row
+begin
+    declare fail_count int;
+    
+    if new.event_type = 'login_failed' then
+        select count(*) into fail_count
+        from logs
+        where ip_address = new.ip_address
+            and event_type = 'login_failed'
+            and event_time > now() - interval 10 minute;
+    
+        if fail_count >= 3 then
+            insert into incidents (log_id, title, description, severity, reporter)
+            values (new.log_id, 'Multiple login failures detected', concat('IP:', new.ip_address, ' had ', fail_count, ' failed attempts'), 'high', 'system');
+		end if;
+	end if;
+end;
+//
+delimiter ;
+
+delimiter //
+create procedure daily_summary()
+begin
+    select
+        date(event_time) as date,
+        count(*) as total_logs,
+        sum(event_type = 'login_failed') as failed_logins,
+        (select count(*)
+         from incidents i
+         where date(i.created_at) = date(l.event_time)) as total_incidents
+	from logs l
+    group by date(l.event_time)
+    order by date desc
+    limit 7;
+end;
+//
+delimiter ;
+
+create or replace view active_incidents as
+select
+    incident_id, title, severity, status, created_at
+    from incidents
+    where status != 'resolved';
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS weekly_summary;
+CREATE PROCEDURE weekly_summary()
+BEGIN
+    SELECT
+        DATE(l.event_time) AS date,
+        COUNT(*) AS total_logs,
+        SUM(l.event_type = 'login_failed') AS failed_logins,
+        COUNT(DISTINCT i.log_id) AS total_incidents
+    FROM logs l
+    LEFT JOIN incidents i ON DATE(i.created_at) = DATE(l.event_time)
+    GROUP BY DATE(l.event_time)
+    ORDER BY date DESC
+    LIMIT 7;
+END;
+//
+DELIMITER ;
