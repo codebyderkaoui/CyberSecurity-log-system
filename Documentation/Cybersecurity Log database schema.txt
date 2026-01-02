@@ -23,7 +23,7 @@ create table users (
   updated_at datetime default current_timestamp on update current_timestamp
   );
 
--- Rationale:
+-- explanation:
 -- * 'username' must be unique for login.
 -- * Role is simple but allows admin vs analyst functions.
 -- * Timestamps help track user account creation & updates.
@@ -47,7 +47,7 @@ create table logs (
       on delete set null on update cascade
   );
 
--- Rationale:
+-- explanation:
 -- * Each log represents a discrete security event.
 -- * event_time allow chronological and range-based queries.
 -- * 'event_type' makes filtering possible for analytics.
@@ -74,7 +74,7 @@ create table incidents (
       on delete set null on update cascade
   );
 
--- Rationale:
+-- explanation:
 -- * Represents an actionable security case linked to logs.
 -- * Can be created manually or automatically (via trigger).
 -- * Tracks lifecycle and responsible entity.
@@ -90,12 +90,12 @@ create index idx_logs_ip on logs(ip_address);
 create index idx_incidents_status on incidents(status);
 create index idx_incidents_severity on incidents(severity);
 
--- Rationale:
+-- explanation:
 -- * Indexes accelerate dashboard queries and daily summaries.
 -- * Common filters are time-based and status-based.
 
 --------------------------------------------------------------------------------
--- SAMPLE TRIGGER (optional)
+-- TRIGGER
 -- Purpose: auto-create incident on repeated failed logins
 --------------------------------------------------------------------------------
 
@@ -122,16 +122,14 @@ end;
 //
 delimiter ;
 
--- Rationale:
+-- explanation:
 -- * Automatically detects brute-force attempts.
 -- * Demonstrates trigger logic for real security use case.
-
--- explaination:
 -- * select count(*) into fail_count : counts how many failed logins came from the same IP in the last 10 minutes.
 -- * if fail_count >= 3 then : If 3 or more → it triggers an incident automatically.
 
 --------------------------------------------------------------------------------
--- STORED PROCEDURE (optional)
+-- STORED PROCEDURE
 -- Purpose: generate daily report summary of logs and incidents
 --------------------------------------------------------------------------------
 
@@ -153,11 +151,9 @@ end;
 //
 delimiter ;
 
--- Rationale:
+-- explanation:
 -- * Illustrates use of stored procedures for reporting.
 -- * Can be visualized easily with Pandas or Plotly.
-
--- explaination:
 -- * date(event_time) as date, : Converts the timestamp column in logs to a date only, ignoring the time.
 -- * (event_type = 'login_failed') : evaluates to 1 if true, 0 if false.
 -- * sum(...) : counts how many failed logins occurred that day.
@@ -188,7 +184,7 @@ DELIMITER ;
 
 -- update it to weekly and fixed it since it didn't work during the python test.
 --------------------------------------------------------------------------------
--- VIEW (optional)
+-- VIEW
 -- Purpose: simplified view for active incidents (for dashboard)
 --------------------------------------------------------------------------------
 
@@ -198,7 +194,7 @@ select
     from incidents
     where status != 'resolved';
 
--- Rationale:
+-- explanation:
 -- * Makes dashboard queries cleaner.
 -- * Demonstrates MySQL VIEW usage.
 -- * Simplifies queries. every time, you just do: select * from active_incidents;
