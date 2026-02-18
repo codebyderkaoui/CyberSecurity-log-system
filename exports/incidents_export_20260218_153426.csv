@@ -1,0 +1,58 @@
+incident_id,log_id,title,description,status,severity,reporter,created_at,updated_at
+196,N/A,Multiple High Severity data_breach Events,"13 high severity data_breach events detected. first occurrence: 2026-01-08 00:21:41, last occurrence: 2026-01-08 00:21:49.",open,high,anomaly_detection_system,2026-01-08 02:07:44,2026-01-08 02:07:44
+189,N/A,Account Compromise Attempt from 192.168.1.20,IP 192.168.1.20 attempted to access 4 unique accounts. Total attempts: 5. Period: 2026-01-08 00:21:42 to 2026-01-08 00:21:44.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+195,N/A,Multiple High Severity data_breach Events,"13 high severity data_breach events detected. first occurrence: 2026-01-08 00:21:41, last occurrence: 2026-01-08 00:21:49.",open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+194,N/A,Unexpected Login Activity Spike detected,205 login events detected in the last 10 minutes. This is so much higher than normal.,open,medium,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+193,N/A,Account Compromise Attempt from 172.16.0.10,IP 172.16.0.10 attempted to access 3 unique accounts. Total attempts: 5. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:45.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+192,N/A,Account Compromise Attempt from 10.0.0.5,IP 10.0.0.5 attempted to access 3 unique accounts. Total attempts: 3. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:44.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+191,N/A,Account Compromise Attempt from 10.0.0.25,IP 10.0.0.25 attempted to access 3 unique accounts. Total attempts: 3. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:44.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+182,N/A,Brute Force Attack from 198.51.100.10,"IP 198.51.100.10 made 14 failed login attempts. Targets: admin,jane.smith,john.doe,root. Period: 2026-01-08 00:21:42 to 2026-01-08 00:21:46.",open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+190,N/A,Account Compromise Attempt from 198.51.100.10,IP 198.51.100.10 attempted to access 4 unique accounts. Total attempts: 13. Period: 2026-01-08 00:21:42 to 2026-01-08 00:21:46.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+188,N/A,Account Compromise Attempt from 10.0.0.15,IP 10.0.0.15 attempted to access 5 unique accounts. Total attempts: 8. Period: 2026-01-08 00:21:43 to 2026-01-08 00:21:46.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+187,N/A,Account Compromise Attempt from 203.0.113.100,IP 203.0.113.100 attempted to access 9 unique accounts. Total attempts: 11. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:47.,open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+186,N/A,Brute Force Attack from 192.168.1.20,"IP 192.168.1.20 made 5 failed login attempts. Targets: bob.wilson,emma.johnson,frank.garcia,root. Period: 2026-01-08 00:21:42 to 2026-01-08 00:21:44.",open,medium,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+185,N/A,Brute Force Attack from 172.16.0.10,"IP 172.16.0.10 made 5 failed login attempts. Targets: alice.brown,david.miller,john.doe. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:45.",open,medium,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+184,N/A,Brute Force Attack from 10.0.0.15,"IP 10.0.0.15 made 9 failed login attempts. Targets: bob.wilson,charlie.davis,david.miller,frank.garcia,grace.martinez. Period: 2026-01-08 00:21:43 to 2026-01-08 00:21:46.",open,medium,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+183,N/A,Brute Force Attack from 203.0.113.100,"IP 203.0.113.100 made 12 failed login attempts. Targets: admin,bob.wilson,charlie.davis,david.miller,frank.garcia,henry.rodriguez,jane.smith,john.doe,root. Period: 2026-01-08 00:21:41 to 2026-01-08 00:21:47.",open,high,anomaly_detection_system,2026-01-08 00:28:52,2026-01-08 00:28:52
+181,N/A,Repeated Permission Escalation Attempts,User bob.wilson attempted to access admin panel 3 times without authorization.,open,medium,system,2026-01-08 00:21:50,2026-01-08 00:21:50
+180,N/A,Unusual After-Hours Database Access,Database queries executed at 2:30 AM from admin account. Requires investigation.,open,high,jane.smith,2026-01-08 00:21:50,2026-01-08 00:21:50
+179,N/A,Suspicious Activity from External IP,Multiple failed access attempts detected from external IP address. Possible reconnaissance activity.,open,medium,john.doe,2026-01-08 00:21:50,2026-01-08 00:21:50
+174,856,Multiple login failures detected,IP:203.0.113.100 had 8 failed attempts,open,high,system,2026-01-08 00:21:47,2026-01-08 00:21:47
+178,860,Multiple login failures detected,IP:203.0.113.100 had 12 failed attempts,open,high,system,2026-01-08 00:21:47,2026-01-08 00:21:47
+177,859,Multiple login failures detected,IP:203.0.113.100 had 11 failed attempts,open,high,system,2026-01-08 00:21:47,2026-01-08 00:21:47
+175,857,Multiple login failures detected,IP:203.0.113.100 had 9 failed attempts,open,high,system,2026-01-08 00:21:47,2026-01-08 00:21:47
+176,858,Multiple login failures detected,IP:203.0.113.100 had 10 failed attempts,open,high,system,2026-01-08 00:21:47,2026-01-08 00:21:47
+173,855,Multiple login failures detected,IP:198.51.100.10 had 14 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+164,843,Multiple login failures detected,IP:10.0.0.15 had 8 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+165,844,Multiple login failures detected,IP:10.0.0.15 had 9 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+166,848,Multiple login failures detected,IP:198.51.100.10 had 7 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+167,849,Multiple login failures detected,IP:198.51.100.10 had 8 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+168,850,Multiple login failures detected,IP:198.51.100.10 had 9 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+169,851,Multiple login failures detected,IP:198.51.100.10 had 10 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+170,852,Multiple login failures detected,IP:198.51.100.10 had 11 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+171,853,Multiple login failures detected,IP:198.51.100.10 had 12 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+172,854,Multiple login failures detected,IP:198.51.100.10 had 13 failed attempts,open,high,system,2026-01-08 00:21:46,2026-01-08 00:21:46
+163,839,Multiple login failures detected,IP:203.0.113.100 had 7 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+161,832,Multiple login failures detected,IP:198.51.100.10 had 5 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+162,837,Multiple login failures detected,IP:198.51.100.10 had 6 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+160,824,Multiple login failures detected,IP:10.0.0.15 had 7 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+159,819,Multiple login failures detected,IP:198.51.100.10 had 4 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+158,817,Multiple login failures detected,IP:10.0.0.15 had 6 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+157,804,Multiple login failures detected,IP:172.16.0.10 had 5 failed attempts,open,high,system,2026-01-08 00:21:45,2026-01-08 00:21:45
+154,796,Multiple login failures detected,IP:10.0.0.5 had 3 failed attempts,open,high,system,2026-01-08 00:21:44,2026-01-08 00:21:44
+156,799,Multiple login failures detected,IP:10.0.0.25 had 4 failed attempts,open,high,system,2026-01-08 00:21:44,2026-01-08 00:21:44
+155,797,Multiple login failures detected,IP:172.16.0.10 had 4 failed attempts,open,high,system,2026-01-08 00:21:44,2026-01-08 00:21:44
+153,772,Multiple login failures detected,IP:192.168.1.20 had 5 failed attempts,open,high,system,2026-01-08 00:21:44,2026-01-08 00:21:44
+152,770,Multiple login failures detected,IP:10.0.0.15 had 5 failed attempts,open,high,system,2026-01-08 00:21:44,2026-01-08 00:21:44
+151,757,Multiple login failures detected,IP:172.16.0.10 had 3 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+150,748,Multiple login failures detected,IP:10.0.0.15 had 4 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+149,747,Multiple login failures detected,IP:198.51.100.10 had 3 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+147,741,Multiple login failures detected,IP:192.168.1.20 had 4 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+148,744,Multiple login failures detected,IP:10.0.0.15 had 3 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+146,738,Multiple login failures detected,IP:192.168.1.20 had 3 failed attempts,open,high,system,2026-01-08 00:21:43,2026-01-08 00:21:43
+145,693,Multiple login failures detected,IP:203.0.113.100 had 6 failed attempts,open,high,system,2026-01-08 00:21:42,2026-01-08 00:21:42
+144,692,Multiple login failures detected,IP:192.168.1.30 had 3 failed attempts,open,high,system,2026-01-08 00:21:42,2026-01-08 00:21:42
+143,691,Multiple login failures detected,IP:10.0.0.25 had 3 failed attempts,open,high,system,2026-01-08 00:21:42,2026-01-08 00:21:42
+142,684,Multiple login failures detected,IP:203.0.113.100 had 5 failed attempts,open,high,system,2026-01-08 00:21:42,2026-01-08 00:21:42
+140,654,Multiple login failures detected,IP:203.0.113.100 had 3 failed attempts,open,high,system,2026-01-08 00:21:41,2026-01-08 00:21:41
+141,672,Multiple login failures detected,IP:203.0.113.100 had 4 failed attempts,open,high,system,2026-01-08 00:21:41,2026-01-08 00:21:41

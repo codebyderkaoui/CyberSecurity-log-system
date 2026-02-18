@@ -38,6 +38,7 @@ def print_menu():
     print("  6. Update Incident Status")
     print("  7. Generate Weekly Report")
     print("  8. Run Anomaly Detection")
+    print("  9. Export Data to CSV")
     print("  0. Exit")
     print("-"*60)
 
@@ -341,19 +342,99 @@ def generate_report():
     print("\n")
     try:
         generate_weekly_report()
+        
+        # Ask if user wants to export to CSV
+        print("\n")
+        export_choice = input("Export report to CSV? (y/n): ").strip().lower()
+        if export_choice == 'y':
+            from analysis.reports import export_report_to_csv, get_report_data
+            data = get_report_data()
+            if data:
+                export_report_to_csv(data)
     except Exception as e:
         print(f"❌ Error generating report: {e}")
     
     input("\nPress Enter to continue...")
 
 
-def run_anomaly_detection():
-    """Run anomaly detection algorithms"""
-    print("\n")
+def export_data_menu():
+    """Export data to CSV submenu"""
+    print("\n" + "="*60)
+    print("EXPORT DATA TO CSV")
+    print("="*60)
+    print("\n📊 Export Options:")
+    print("  1. Export All Logs")
+    print("  2. Export All Incidents")
+    print("  3. Export Current Search Results (Logs)")
+    print("  4. Export Current Search Results (Incidents)")
+    print("  0. Back to Main Menu")
+    print("-"*60)
+    
+    choice = input("\nEnter your choice: ").strip()
+    
     try:
-        result = run_all_detections(auto_create_incidents=True)
+        # Import here to avoid circular imports
+        from utils.csv_export import (
+            export_logs_to_csv, 
+            export_incidents_to_csv,
+            export_filtered_logs_to_csv,
+            export_filtered_incidents_to_csv
+        )
+        
+        if choice == '1':
+            print("\n📥 Exporting all logs...")
+            export_logs_to_csv()
+        
+        elif choice == '2':
+            print("\n📥 Exporting all incidents...")
+            export_incidents_to_csv()
+        
+        elif choice == '3':
+            print("\n🔍 Export Filtered Logs")
+            print("Leave filters blank to export all")
+            
+            ip_address = input("Filter by IP address: ").strip() or None
+            username = input("Filter by username: ").strip() or None
+            event_type = input("Filter by event type: ").strip() or None
+            severity = input("Filter by severity (low/medium/high): ").strip() or None
+            start_date = input("Start date (YYYY-MM-DD): ").strip() or None
+            end_date = input("End date (YYYY-MM-DD): ").strip() or None
+            
+            export_filtered_logs_to_csv(
+                ip_address=ip_address,
+                username=username,
+                event_type=event_type,
+                severity=severity,
+                start_date=start_date,
+                end_date=end_date
+            )
+        
+        elif choice == '4':
+            print("\n🔍 Export Filtered Incidents")
+            print("Leave filters blank to export all")
+            
+            status = input("Filter by status (open/investigating/resolved): ").strip() or None
+            severity = input("Filter by severity (low/medium/high/critical): ").strip() or None
+            keyword = input("Search keyword in title/description: ").strip() or None
+            start_date = input("Start date (YYYY-MM-DD): ").strip() or None
+            end_date = input("End date (YYYY-MM-DD): ").strip() or None
+            
+            export_filtered_incidents_to_csv(
+                status=status,
+                severity=severity,
+                title_keyword=keyword,
+                start_date=start_date,
+                end_date=end_date
+            )
+        
+        elif choice == '0':
+            return
+        
+        else:
+            print("\n❌ Invalid choice")
+    
     except Exception as e:
-        print(f"❌ Error running anomaly detection: {e}")
+        print(f"\n❌ Error during export: {e}")
     
     input("\nPress Enter to continue...")
 
@@ -409,6 +490,10 @@ def main():
         elif choice == '8':
             clear_screen()
             run_anomaly_detection()
+        
+        elif choice == '9':
+            clear_screen()
+            export_data_menu()
         
         elif choice == '0':
             print("\n👋 Exiting system. Goodbye!")
