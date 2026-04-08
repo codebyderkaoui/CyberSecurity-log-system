@@ -13,6 +13,7 @@ from models.incident_model import (
 )
 from analysis.reports import generate_weekly_report
 from analysis.anomaly_detection import run_all_detections
+from analysis.anomaly_detection import run_all_detections
 
 
 def clear_screen():
@@ -39,6 +40,7 @@ def print_menu():
     print("  7. Generate Weekly Report")
     print("  8. Run Anomaly Detection")
     print("  9. Export Data to CSV")
+    print(" 10. Database Maintenance")
     print("  0. Exit")
     print("-"*60)
 
@@ -438,16 +440,94 @@ def export_data_menu():
     
     input("\nPress Enter to continue...")
 
+# 4. THESE THREE MUST BE HERE - BEFORE main()
+def run_anomaly_detection():
+    """Run anomaly detection algorithms"""
+    print("\n")
+    try:
+        result = run_all_detections(auto_create_incidents=True)
+    except Exception as e:
+        print(f"❌ Error running anomaly detection: {e}")
+    
+    input("\nPress Enter to continue...")
 
+
+def export_data_menu():
+    """Export data to CSV submenu"""
+    print("\n" + "="*60)
+    print("EXPORT DATA TO CSV")
+    print("="*60)
+    print("\n📊 Export Options:")
+    print("  1. Export All Logs")
+    print("  2. Export All Incidents")
+    print("  3. Export Filtered Logs")
+    print("  4. Export Filtered Incidents")
+    print("  0. Back to Main Menu")
+    print("-"*60)
+    
+    choice = input("\nEnter your choice: ").strip()
+    
+    try:
+        from utils.csv_export import (
+            export_logs_to_csv, 
+            export_incidents_to_csv,
+            export_filtered_logs_to_csv,
+            export_filtered_incidents_to_csv
+        )
+        
+        if choice == '1':
+            print("\n📥 Exporting all logs...")
+            export_logs_to_csv()
+        elif choice == '2':
+            print("\n📥 Exporting all incidents...")
+            export_incidents_to_csv()
+        elif choice == '3':
+            print("\n🔍 Export Filtered Logs")
+            print("Leave filters blank to skip")
+            ip_address = input("Filter by IP address: ").strip() or None
+            username = input("Filter by username: ").strip() or None
+            event_type = input("Filter by event type: ").strip() or None
+            severity = input("Filter by severity (low/medium/high): ").strip() or None
+            start_date = input("Start date (YYYY-MM-DD): ").strip() or None
+            end_date = input("End date (YYYY-MM-DD): ").strip() or None
+            export_filtered_logs_to_csv(ip_address, username, event_type, severity, start_date, end_date)
+        elif choice == '4':
+            print("\n🔍 Export Filtered Incidents")
+            print("Leave filters blank to skip")
+            status = input("Filter by status (open/investigating/resolved): ").strip() or None
+            severity = input("Filter by severity (low/medium/high/critical): ").strip() or None
+            keyword = input("Search keyword in title/description: ").strip() or None
+            start_date = input("Start date (YYYY-MM-DD): ").strip() or None
+            end_date = input("End date (YYYY-MM-DD): ").strip() or None
+            export_filtered_incidents_to_csv(status, severity, keyword, start_date, end_date)
+        elif choice == '0':
+            return
+        else:
+            print("\n❌ Invalid choice")
+    except Exception as e:
+        print(f"\n❌ Error during export: {e}")
+    
+    input("\nPress Enter to continue...")
+
+
+def database_maintenance_menu():
+    """Database maintenance and cleanup menu"""
+    try:
+        from utils.cleanup import display_cleanup_menu
+        display_cleanup_menu()
+    except Exception as e:
+        print(f"\n❌ Error accessing maintenance menu: {e}")
+        input("\nPress Enter to continue...")
+
+
+# 5. MAIN FUNCTION - AFTER THE THREE ABOVE
 def main():
     """Main application loop"""
     
-    # Test database connection
     print("Testing database connection...")
     conn = get_db_connection()
     if not conn:
-        print("❌ Failed to connect to database. Please check your configuration.")
-        print("Make sure MySQL is running and db/config.py is properly configured.")
+        print("❌ Failed to connect to database.")
         sys.exit(1)
     conn.close()
     print("✅ Database connection successful!\n")
@@ -462,48 +542,42 @@ def main():
         if choice == '1':
             clear_screen()
             add_log_entry()
-        
         elif choice == '2':
             clear_screen()
             view_all_logs()
-        
         elif choice == '3':
             clear_screen()
             search_filter_logs()
-        
         elif choice == '4':
             clear_screen()
             view_all_incidents()
-        
         elif choice == '5':
             clear_screen()
             search_filter_incidents()
-        
         elif choice == '6':
             clear_screen()
             update_incident()
-        
         elif choice == '7':
             clear_screen()
             generate_report()
-        
         elif choice == '8':
             clear_screen()
             run_anomaly_detection()
-        
         elif choice == '9':
             clear_screen()
             export_data_menu()
-        
+        elif choice == '10':
+            clear_screen()
+            database_maintenance_menu()
         elif choice == '0':
             print("\n👋 Exiting system. Goodbye!")
             sys.exit(0)
-        
         else:
             print("\n❌ Invalid choice. Please try again.")
             input("\nPress Enter to continue...")
 
 
+# 6. AT THE VERY BOTTOM
 if __name__ == "__main__":
     try:
         main()
@@ -511,5 +585,5 @@ if __name__ == "__main__":
         print("\n\n👋 System interrupted. Goodbye!")
         sys.exit(0)
     except Exception as e:
-        print(f"\n❌ Fatal error: {e}")
+        print(f"\nFatal error: {e}")
         sys.exit(1)

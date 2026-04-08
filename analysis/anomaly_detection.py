@@ -3,8 +3,19 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.connection import get_db_connection
 from models.incident_model import create_incident
+from config.settings import ANOMALY_DETECTION
 
-def detect_brute_force_attacks(time_window_min=60, threshold=5):
+BRUTE_FORCE_CONFIG = ANOMALY_DETECTION['brute_force']
+ACCOUNT_COMPROMISE_CONFIG = ANOMALY_DETECTION['account_compromise']
+LOGIN_SPIKE_CONFIG = ANOMALY_DETECTION['login_spike']
+HIGH_SEVERITY_CONFIG = ANOMALY_DETECTION['high_severity']
+
+def detect_brute_force_attacks(time_window_min=None, threshold=None):
+    if time_window_min is None:
+        time_window_min = BRUTE_FORCE_CONFIG['time_window_min']
+    if threshold is None:
+        threshold = BRUTE_FORCE_CONFIG['threshold']
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -47,7 +58,12 @@ def detect_brute_force_attacks(time_window_min=60, threshold=5):
         cursor.close()
         conn.close()
 
-def detect_account_compromise_attempts(time_window_min=30, threshold=3):
+def detect_account_compromise_attempts(time_window_min=None, threshold=None):
+    if time_window_min is None:
+        time_window_min = ACCOUNT_COMPROMISE_CONFIG['time_window_min']
+    if threshold is None:
+        threshold = ACCOUNT_COMPROMISE_CONFIG['threshold']
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -91,7 +107,12 @@ def detect_account_compromise_attempts(time_window_min=30, threshold=3):
         cursor.close()
         conn.close()
 
-def detect_login_spikes(time_window_min=10, threshold=20):
+def detect_login_spikes(time_window_min=None, threshold=None):
+    if time_window_min is None:
+        time_window_min = LOGIN_SPIKE_CONFIG['time_window_min']
+    if threshold is None:
+        threshold = LOGIN_SPIKE_CONFIG['threshold']
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -128,7 +149,10 @@ def detect_login_spikes(time_window_min=10, threshold=20):
         cursor.close()
         conn.close()
 
-def detect_high_severity_events(time_window_hours=24):
+def detect_high_severity_events(time_window_hours=None):
+    if time_window_hours is None:
+        time_window_hours = HIGH_SEVERITY_CONFIG['time_window_hours']
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -199,7 +223,10 @@ def create_incidents_from_anomalies(anomalies, auto_create=True):
 
     return incidents_created
 
-def run_all_detections(auto_create_incidents=True):
+def run_all_detections(auto_create_incidents=None):
+    if auto_create_incidents is None:
+        auto_create_incidents = ANOMALY_DETECTION['auto_create_incidents']
+
     print("\nrunning anomaly detection...")
     all_anomalies = []
 

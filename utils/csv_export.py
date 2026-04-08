@@ -7,23 +7,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from models.log_model import get_all_logs, search_logs
 from models.incident_model import get_all_incidents, search_incidents
+from config.settings import EXPORT_CONFIG
 
-# Default: Creates 'exports' folder in project root
-EXPORT_DIR = "exports"  # Creates 'exports' folder in project root
 
-# Alternative options (uncomment one to use):
-
-# Option 1: Desktop folder (Windows)
-# EXPORT_DIR = "C:/Users/epics/Desktop/CyberSec_Exports"
-
-# Option 2: Project root (no subfolder)
-# EXPORT_DIR = "."
-
-# Option 3: Different subfolder name
-# EXPORT_DIR = "reports"
-# EXPORT_DIR = "csv_files"
-# EXPORT_DIR = "data_exports"
-
+EXPORT_DIR = EXPORT_CONFIG['directory']
 
 def ensure_export_directory():
     """Create export directory if it doesn't exist"""
