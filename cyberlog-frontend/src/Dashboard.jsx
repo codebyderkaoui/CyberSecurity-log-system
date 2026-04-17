@@ -305,7 +305,7 @@ export default function Dashboard() {
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: "0.05em" }}>CYBERLOG</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text, letterSpacing: "0.05em" }}>CyberSecurity-Log-System</div>
             <div style={{ fontSize: 10, color: C.muted }}>Security Operations Dashboard</div>
           </div>
         </div>
