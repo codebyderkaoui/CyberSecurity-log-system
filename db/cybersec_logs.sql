@@ -81,13 +81,18 @@ CREATE TABLE `logs` (
   `username` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ip_address` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `event_type` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `severity` enum('low','medium','high') COLLATE utf8mb4_unicode_ci DEFAULT 'low',
+  `severity` enum('low','medium','high','critical') COLLATE utf8mb4_unicode_ci DEFAULT 'low',
   `message` text COLLATE utf8mb4_unicode_ci,
+  `message` text COLLATE utf8mb4_unicode_ci,
+  `is_archived` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 = active, 1 = soft-deleted',
+  `archived_at` datetime DEFAULT NULL COMMENT 'Timestamp of soft-delete',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`log_id`),
   KEY `username` (`username`),
   KEY `idx_logs_time` (`event_time`),
   KEY `idx_logs_ip` (`ip_address`),
+  KEY `idx_logs_severity` (`severity`),
+  KEY `idx_logs_is_archived` (`is_archived`),
   CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=890 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
